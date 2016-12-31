@@ -25,6 +25,8 @@ namespace NadekoBot.Modules.Conversations
 
         public override void Install(ModuleManager manager)
         {
+            var botMessage = "";
+            var messageSent = "";
             var rng = new Random();
 
             manager.CreateCommands("", cgb =>
@@ -197,6 +199,46 @@ namespace NadekoBot.Modules.Conversations
                         File.WriteAllText("dump.txt", invites);
                         await e.Channel.SendMessage($"Got invites for {i} servers and failed to get invites for {j} servers")
                                        .ConfigureAwait(false);
+                    });
+                cgb.CreateCommand("listserver")
+                    .Description("Lists all servers and server IDs it can | `@NadekoBot listserver`")
+                    .Do(async e =>
+                    {
+                        if (!NadekoBot.IsOwner(e.User.Id)) return;
+                        var i = 0;
+                        var j = 0;
+                        var servname = "";
+                        var sid = "";
+                        foreach (var s in client.Servers)
+                        {
+                            try
+                            {
+                                sid += $"Number {i} - " + s.Id + "\n";
+                                servname += $"Number {i} - " + s.Name + "\n";
+                                i++;
+
+                            }
+                            catch
+                            {
+                                j++;
+                                continue;
+                            }
+                        }
+                        await e.Channel.SendMessage($"Server IDs are: ```\n{sid}``` Server names are: ```\n{servname}``` \n")
+                                       .ConfigureAwait(false);
+                    });
+                cgb.CreateCommand(messageSent)
+                    .Description($"Talk to Nadeko | >talk Hi!")
+                    .Parameter("messageSent", ParameterType.Unparsed)
+                    .Do(async e =>
+                    {
+
+                        var message = e.GetArg("messageSent");
+                        ChatterBotFactory factory = new ChatterBotFactory();
+                        var bot = factory.Create(ChatterBotType.CLEVERBOT);
+                        ChatterBotSession bot1session = bot.CreateSession();
+                        botMessage = bot1session.Think(messageSent);
+                        await e.Channel.SendMessage(botMessage);
                     });
 
                 cgb.CreateCommand("ab")

@@ -530,6 +530,10 @@
     <None Include="resources\images\cards\2_of_clubs.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ChatterBotAPI\ChatterBotAPI.csproj">
+      <Project>{2e624962-f155-432c-a90a-e1ce75dee9ea}</Project>
+      <Name>ChatterBotAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\discord.net\src\Discord.Net.Audio.Net45\Discord.Net.Audio.csproj">
       <Project>{7bfef748-b934-4621-9b11-6302e3a9f6b3}</Project>
       <Name>Discord.Net.Audio</Name>

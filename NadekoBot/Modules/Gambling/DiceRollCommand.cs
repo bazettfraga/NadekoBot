@@ -46,7 +46,7 @@ namespace NadekoBot.Modules.Gambling
                                             }.Merge();
 
 
-        Regex dndRegex = new Regex(@"(?<n1>\d+)d(?<n2>\d+)", RegexOptions.Compiled);
+        Regex dndRegex = new Regex(@"(?<n1>\d+)d(?<n2>\d+)(?:\+(?<add>\d+))?(?:\-(?<sub>\d+))", RegexOptions.Compiled);
         private Func<CommandEventArgs, Task> RollFunc(bool ordered = true)
         {
             var r = new Random();
@@ -74,13 +74,17 @@ namespace NadekoBot.Modules.Gambling
                         int.TryParse(m.Groups["n2"].ToString(), out n2) &&
                         n1 <= 50 && n2 <= 100000 && n1 > 0 && n2 > 0)
                     {
+                        var add = 0;
+                        var sub = 0;
+                        int.TryParse(m.Groups["add"].Value, out add);
+                        int.TryParse(m.Groups["sub"].Value, out sub);
                         var arr = new int[n1];
                         for (int i = 0; i < n1; i++)
                         {
-                            arr[i] = r.Next(1, n2 + 1);
+                            arr[i] = r.Next(1, n2 + 1)+add-sub;
                         }
                         var elemCnt = 0;
-                        await e.Channel.SendMessage($"`Rolled {n1} {(n1 == 1 ? "die" : "dice")} 1-{n2}.`\n`Result:` " + string.Join(", ", (ordered ? arr.OrderBy(x => x).AsEnumerable() : arr).Select(x => elemCnt++ % 2 == 0 ? $"**{x}**" : x.ToString()))).ConfigureAwait(false);
+                        await e.Channel.SendMessage($"`Rolled {n1} {(n1 == 1 ? "die" : "dice")} 1-{n2}.`\n`Result:` " + string.Join(", ", (ordered ? arr.OrderBy(x => x).AsEnumerable() : arr).Select(x => elemCnt++ % 2 == 0 ? $"**{x}**\n`Nat:`{x-add+sub}" : x.ToString()))).ConfigureAwait(false);
                     }
                     return;
                 }
